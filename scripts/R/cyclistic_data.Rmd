@@ -1,0 +1,209 @@
+---
+title: "Cyclistic Bike-Share Analysis"
+author: "Soma Ganesh Dokku"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true          # adds a table of contents
+    toc_float: true    # makes the TOC float on the side
+    theme: cerulean    # Bootstrap theme (options: cerulean, cosmo, flatly, journal, lumen, paper, readable, sandstone, simplex, spacelab, united, yeti)
+    highlight: tango   # syntax highlighting style
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+This report analyzes Cyclistic bike-share data using R.\
+It mirrors the SQL workflow (import, preparation, cleaning, core analyses, advanced analyses, KPI dashboard) and adds visualizations for storytelling.
+
+------------------------------------------------------------------------
+
+# Setup
+
+```{r load_libraries}
+# Load libraries
+library(tidyverse)
+library(lubridate)
+```
+
+# List all CSV files in the working directory
+
+```{r import_files}
+files <- list.files(pattern = "*.csv")
+```
+
+# Read and combine them into one dataframe
+
+```{r combine_data}
+cyclistic_data <- files %>% map_df(~ read_csv(.x))
+```
+
+# Preview
+
+```{r preview_data}
+glimpse(cyclistic_data)
+```
+
+# Data Preparation
+
+```{r data_preparation}
+cyclistic_data <- cyclistic_data %>%
+  mutate(
+    started_at = lubridate::ymd_hms(started_at),
+    ended_at   = lubridate::ymd_hms(ended_at),
+    trip_duration_minutes = as.numeric(difftime(ended_at, started_at, units = "mins")),
+    # Full month names, ordered Jan → Dec
+    month = factor(lubridate::month(started_at, label = TRUE, abbr = FALSE),
+                   levels = month.name, ordered = TRUE),
+    # Day of week names
+    day_of_week = lubridate::wday(started_at, label = TRUE, abbr = FALSE),
+    # Seasons
+    season = case_when(
+      lubridate::month(started_at) %in% c(12,1,2) ~ "Winter",
+      lubridate::month(started_at) %in% c(3,4,5) ~ "Spring",
+      lubridate::month(started_at) %in% c(6,7,8) ~ "Summer",
+      TRUE ~ "Fall"
+    )
+  )
+```
+
+# Data Cleaning
+
+```{r data_cleaning}
+cyclistic_data <- cyclistic_data %>%
+  distinct(ride_id, .keep_all = TRUE) %>%
+  filter(!is.na(started_at), !is.na(ended_at),
+         !is.na(start_station_name), !is.na(end_station_name),
+         trip_duration_minutes >= 0)
+```
+
+# Core Analyses
+
+## Riders by Member Type
+
+```{r riders_by_member_type}
+cyclistic_data %>%
+  count(member_casual) %>%
+  ggplot(aes(x = member_casual, y = n, fill = member_casual)) +
+  geom_col() +
+  labs(title = "Riders by Member Type", y = "Number of Riders")
+```
+
+## Rides by Bike Type and Member Type
+
+```{r rides_by_bike_type}
+cyclistic_data %>%
+  count(rideable_type, member_casual) %>%
+  ggplot(aes(x = rideable_type, y = n, fill = member_casual)) +
+  geom_col(position = "dodge") +
+  labs(title = "Rides by Bike Type and Member Type", y = "Number of Riders")
+```
+
+## Monthly Riders
+
+```{r monthly_riders}
+cyclistic_data %>%
+  count(month, member_casual) %>%
+  ggplot(aes(x = month, y = n, color = member_casual, group = member_casual)) +
+  geom_line(size = 1.2) +
+  geom_point() +
+  labs(title = "Monthly Riders by Member Type", y = "Number of Riders")
+```
+
+## Weekly Riders
+
+```{r weekly_riders}
+cyclistic_data %>%
+  count(day_of_week, member_casual) %>%
+  ggplot(aes(x = day_of_week, y = n, fill = member_casual)) +
+  geom_col(position = "dodge") +
+  labs(title = "Weekly Riders by Member Type", y = "Number of Riders")
+```
+
+## Hourly Riders
+
+```{r hourly_riders}
+cyclistic_data %>%
+  mutate(hour = lubridate::hour(started_at)) %>%
+  count(hour, member_casual) %>%
+  ggplot(aes(x = hour, y = n, color = member_casual, group = member_casual)) +
+  geom_line(size = 1.2) +
+  labs(title = "Hourly Riders by Member Type", y = "Number of Riders")
+```
+
+# Advanced Analyses
+
+## Ride Length Distribution
+
+```{r ride_length_distribution}
+ggplot(cyclistic_data, aes(x = trip_duration_minutes, fill = member_casual)) +
+  geom_histogram(binwidth = 5, position = "dodge") +
+  xlim(0, 120) +
+  labs(title = "Ride Length Distribution", x = "Duration (minutes)", y = "Count")
+```
+
+## Trip Duration
+
+```{r trip_duration}
+cyclistic_data %>%
+  mutate(duration_bucket = case_when(
+    trip_duration_minutes < 5 ~ "0–5 min",
+    trip_duration_minutes <= 15 ~ "5–15 min",
+    trip_duration_minutes <= 30 ~ "15–30 min",
+    trip_duration_minutes <= 60 ~ "30–60 min",
+    TRUE ~ "60+ min"
+  )) %>%
+  count(duration_bucket, member_casual) %>%
+  ggplot(aes(x = duration_bucket, y = n, fill = member_casual)) +
+  geom_col(position = "dodge") +
+  labs(title = "Trip Duration Buckets", y = "Number of Rides")
+```
+
+## Seasonal Trends
+
+```{r seasonal_trends}
+cyclistic_data %>%
+  count(season, member_casual) %>%
+  ggplot(aes(x = season, y = n, fill = member_casual)) +
+  geom_col(position = "dodge") +
+  labs(title = "Seasonal Trends by Member Type", y = "Number of Rides")
+```
+
+## Station Analysis
+
+```{r station_analysis}
+cyclistic_data %>%
+  count(start_station_name, sort = TRUE) %>%
+  slice(1:10) %>%
+  ggplot(aes(x = reorder(start_station_name, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 10 Start Stations", y = "Number of Rides", x = "Station")
+```
+
+# KPI Dashboard
+
+```{r kpi_dashboard}
+total_rides <- nrow(cyclistic_data)
+
+avg_duration <- mean(cyclistic_data$trip_duration_minutes)
+
+peak_month <- cyclistic_data %>%
+  count(month) %>%
+  arrange(desc(n)) %>%
+  slice(1)
+
+member_split <- cyclistic_data %>%
+  count(member_casual) %>%
+  mutate(percentage = round(100 * n / sum(n), 2))
+
+list(
+  Total_Rides = total_rides,
+  Avg_Duration_Minutes = avg_duration,
+  Peak_Month = peak_month,
+  Member_vs_Casual = member_split
+)
+```

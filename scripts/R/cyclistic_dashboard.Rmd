@@ -1,0 +1,116 @@
+---
+title: "Cyclistic Bike-Share Dashboard"
+author: "Soma Ganesh Dokku"
+date: "`r Sys.Date()`"
+output: html_document
+runtime: shiny
+---
+
+# Introduction
+This interactive dashboard lets you explore Cyclistic bike-share data with filters, tabs, and dynamic plots.
+
+---
+
+# Setup
+
+```{r load_libraries}
+library(tidyverse)
+library(lubridate)
+library(shiny)
+```
+
+
+# Import Data
+
+```{r import_data}
+files <- list.files(pattern = "*.csv")
+cyclistic_data <- files %>% map_df(~ read_csv(.x)) %>%
+  mutate(
+    started_at = ymd_hms(started_at),
+    ended_at   = ymd_hms(ended_at),
+    trip_duration_minutes = as.numeric(difftime(ended_at, started_at, units = "mins")),
+    month = factor(month(started_at, label = TRUE, abbr = FALSE),
+                   levels = month.name, ordered = TRUE),
+    day_of_week = wday(started_at, label = TRUE, abbr = FALSE),
+    season = case_when(
+      month(started_at) %in% c(12,1,2) ~ "Winter",
+      month(started_at) %in% c(3,4,5) ~ "Spring",
+      month(started_at) %in% c(6,7,8) ~ "Summer",
+      TRUE ~ "Fall"
+    )
+  )
+```
+
+
+# Dashboard
+
+```{r dashboard, shiny=TRUE}
+ui <- fluidPage(
+  titlePanel("Cyclistic Bike-Share Dashboard"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("member", "Choose Rider Type:",
+                  choices = unique(cyclistic_data$member_casual)),
+      sliderInput("duration", "Max Trip Duration (minutes):",
+                  min = 5, max = 120, value = 60, step = 5)
+    ),
+    mainPanel(
+      tabsetPanel(
+        tabPanel("Overview",
+                 plotOutput("riders_by_type"),
+                 plotOutput("ride_length_dist")),
+        tabPanel("Monthly Trends",
+                 plotOutput("monthly_riders")),
+        tabPanel("KPI Dashboard",
+                 verbatimTextOutput("kpi_summary"))
+      )
+    )
+  )
+)
+
+server <- function(input, output) {
+  output$riders_by_type <- renderPlot({
+    cyclistic_data %>%
+      count(member_casual) %>%
+      ggplot(aes(x = member_casual, y = n, fill = member_casual)) +
+      geom_col() +
+      labs(title = "Riders by Member Type", y = "Number of Riders")
+  })
+
+  output$ride_length_dist <- renderPlot({
+    cyclistic_data %>%
+      filter(trip_duration_minutes <= input$duration) %>%
+      ggplot(aes(x = trip_duration_minutes, fill = member_casual)) +
+      geom_histogram(binwidth = 5, position = "dodge") +
+      labs(title = paste("Ride Length Distribution (<= ", input$duration, " mins)", sep=""),
+           x = "Duration (minutes)", y = "Count")
+  })
+
+  output$monthly_riders <- renderPlot({
+    cyclistic_data %>%
+      filter(member_casual == input$member) %>%
+      count(month) %>%
+      ggplot(aes(x = month, y = n)) +
+      geom_line(size = 1.2, color = "steelblue") +
+      geom_point() +
+      labs(title = paste("Monthly Riders -", input$member),
+           y = "Number of Riders")
+  })
+
+  output$kpi_summary <- renderPrint({
+    total_rides <- nrow(cyclistic_data)
+    avg_duration <- mean(cyclistic_data$trip_duration_minutes)
+    peak_month <- cyclistic_data %>% count(month) %>% arrange(desc(n)) %>% slice(1)
+    member_split <- cyclistic_data %>% count(member_casual) %>% mutate(percentage = round(100 * n / sum(n), 2))
+
+    list(
+      Total_Rides = total_rides,
+      Avg_Duration_Minutes = avg_duration,
+      Peak_Month = peak_month,
+      Member_vs_Casual = member_split
+    )
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
