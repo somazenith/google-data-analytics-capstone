@@ -1,63 +1,69 @@
-# Cyclistic Bike-Share Data Analysis Case Study
-## Google Data Analytics Certificate Capstone Project
+# Cyclistic Bike-Share Case Study (Data Integrity & Analysis)
+### Google Data Analytics Professional Certificate Capstone Project
 
 ---
 
 ## 📌 Project Overview
-This project analyzes historical trip data from Cyclistic, a fictional bike-share company in Chicago, to identify behavioral differences between casual riders and annual members. The final objective is to design data-driven marketing strategies to convert casual riders into loyal, long-term annual members.
+This repository contains an end-to-end data analysis project focusing on historical trip data from Cyclistic, a bike-share company in Chicago. The core objective is to analyze customer behaviors to identify distinct usage patterns between casual riders and annual members, ultimately delivering data-driven strategies to maximize annual membership conversion.
 
-### 🛡️ Core Competencies Demonstrated (Cybersecurity Relevance)
-While this is a data analytics project, the methodologies directly mirror fundamental security operations:
-* **Data Cleaning & Integrity:** Standardizing timestamps, resolving null values, and stripping corrupt logs (corresponds to SIEM log ingestion).
-* **Big Data Processing:** Querying large datasets with optimized SQL queries (corresponds to security threat hunting and database auditing).
-* **Pattern & Anomaly Detection:** Recognizing behavioral patterns across massive event pools (corresponds to identifying network intrusion signatures).
-
----
-
-## 🛠️ Tech Stack & Tools
-* **Data Extraction & Ingestion:** SQL (BigQuery)
-* **Data Cleaning & Wrangling:** Python (Pandas/NumPy) & R (tidyverse)
-* **Data Visualization & Reporting:** Tableau / R (ggplot2)
+### 🛡️ Technical Relevance to Cybersecurity
+While this project focuses on business intelligence, the underlying pipeline directly mirrors core security workflows:
+* **Data Hygiene & ETL:** Ingesting, parsing, and cleaning large-scale raw data sets—identical to managing SIEM log ingestion pipeline workflows.
+* **Anomaly Identification:** Writing structured filters to flag system errors, negative values, and temporal discrepancies, simulating intrusion detection signatures.
+* **Integrity Validation:** Verifying that data constraints (e.g., matching unique keys, format alignment) remain consistent post-processing.
 
 ---
 
-## 📐 Data Analysis Process (Methodology)
-
-### 1. Ask
-* **Business Objective:** Maximize annual memberships by converting casual riders.
-* **Key Question:** How do annual members and casual riders use Cyclistic bikes differently?
-
-### 2. Prepare
-* **Data Source:** Publicly available historical trip data from Cyclistic.
-* **Data Privacy:** Data anonymized to protect User PII (Personally Identifiable Information).
-
-### 3. Process (Data Cleaning Documentation)
-* Merged 12 individual monthly CSV datasets into a single database.
-* Removed duplicate entries and rows with missing critical tracking IDs.
-* Stripped negative `ride_length` anomalies caused by system maintenance testing.
-* Standardized date/time formats across all columns for query efficiency.
-
-### 4. Analyze & Share
-*(Tip: Replace this text later with 2-3 of your key high-level findings!)*
-* **Finding 1:** Casual riders use bikes significantly longer on weekends, suggesting leisure use.
-* **Finding 2:** Annual members show sharp usage peaks around 8:00 AM and 5:00 PM, indicating a daily commuter profile.
-* **Visualizations:** [Link to your Tableau Dashboard or embed your project charts here]
-
-### 5. Act (Strategic Recommendations)
-1. **Targeted Campaigns:** Launch digital marketing campaigns tailored to weekend leisure hotspots.
-2. **Seasonal Promotions:** Introduce seasonal or weekend-only membership plans designed specifically for current casual riders.
+## 🛠️ Tooling & Tech Stack
+* **Languages:** SQL, Python, R
+* **Data Engineering:** Python (Pandas/NumPy), R (dplyr, tidyverse)
+* **Analytics Environment:** BigQuery SQL, Jupyter Notebooks
+* **Visualization & Dashboards:** Tableau, ggplot2, Matplotlib
 
 ---
 
-## 📁 Repository Directory Layout
-* `/scripts` — Contains raw `.sql` files, Python scripts, and R Markdown files.
-* `/visualizations` — Contains exported `.png` or `.pdf` data charts and Tableau workbooks.
-* `/docs` — Executive summary report outlining the business recommendations.
+## 📐 Data Pipeline & Methodology
+
+### 1. Ingestion & Preparation (Ask & Prepare)
+* **Dataset:** Public historical trip metrics (anonymized to protect user PII).
+* **Scope:** 12 monthly CSV files consolidated to evaluate long-term trends.
+
+### 2. Processing & Data Integrity (Process)
+* Handled missing value vectors (`null` values) across critical tracking fields.
+* Stripped systemic anomalies (e.g., negative duration fields caused by maintenance testing).
+* Standardized Unix/ISO timestamps across all data frames to ensure temporal alignment.
+
+### 3. Analysis & Threat-Hunting Analogy (Analyze)
+* Aggregated usage metrics based on time, day, week, and geographic station variables.
+* **Key Finding:** Casual riders exhibit localized, high-duration usage spikes on weekends, whereas annual members display predictable, high-frequency commuting peaks at 08:00 and 17:00 on weekdays.
+
+### 4. Strategic Recommendations (Act)
+* Implement targeted digital marketing near weekend leisure hubs during peak casual rider hours.
+* Introduce flexible weekend-only or seasonal membership variants tailored to casual user profiles.
 
 ---
 
-## 🚀 How to Run the Scripts
-1. Clone this repository: `git clone https://github.com`
-2. Open the SQL scripts inside Google BigQuery or a local PostgreSQL instance.
-3. Install required Python packages: `pip install pandas numpy matplotlib`
-4. Execute the cleanup script: `python scripts/data_cleaning.py`
+## 📂 Repository Architecture
+```text
+├── data/
+│   ├── raw/           # Source datasets (Omitted from remote due to file size constraints)
+│   └── cleaned/       # Parsed datasets, data dictionaries, and cleaning logs
+├── scripts/           # Production scripts categorized by environment (SQL, R, Python)
+├── notebooks/         # Interactive Jupyter (.ipynb) and R Markdown (.Rmd) workflows
+├── visualizations/    # Static PNG/JPG charts and interactive Tableau dashboards (.twbx)
+└── docs/              # High-level executive reports and document summaries
+```
+
+---
+
+## 🚀 Execution & Reproduction
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com
+   ```
+2. **Execute Python Environment Cleanup:**
+   ```bash
+   pip install pandas numpy matplotlib
+   python scripts/python/your_script_name.py
+   ```
+3. **Database Engine:** Upload files to Google BigQuery or local PostgreSQL and execute query assets from `/scripts/sql/`.
