@@ -1,69 +1,130 @@
-# Cyclistic Bike-Share Case Study (Data Integrity & Analysis)
-### Google Data Analytics Professional Certificate Capstone Project
+# 🚴‍♂️ Cyclistic Bike-Share Case Study: How Does a Bike-Share Navigate Speedy Success?
+
+Welcome to my portfolio project for the Google Data Analytics Professional Certificate. This case study analyzes historical trip data from a fictional bike-share company in Chicago (Cyclistic) to uncover behavioral differences between casual riders and annual members. The ultimate goal is to design a data-driven marketing strategy to convert casual riders into profitable annual members.
 
 ---
 
-## 📌 Project Overview
-This repository contains an end-to-end data analysis project focusing on historical trip data from Cyclistic, a bike-share company in Chicago. The core objective is to analyze customer behaviors to identify distinct usage patterns between casual riders and annual members, ultimately delivering data-driven strategies to maximize annual membership conversion.
-
-### 🛡️ Technical Relevance to Cybersecurity
-While this project focuses on business intelligence, the underlying pipeline directly mirrors core security workflows:
-* **Data Hygiene & ETL:** Ingesting, parsing, and cleaning large-scale raw data sets—identical to managing SIEM log ingestion pipeline workflows.
-* **Anomaly Identification:** Writing structured filters to flag system errors, negative values, and temporal discrepancies, simulating intrusion detection signatures.
-* **Integrity Validation:** Verifying that data constraints (e.g., matching unique keys, format alignment) remain consistent post-processing.
+## 🛠️ Tech Stack & Tools Used
+*   **Data Cleaning & Manipulation:** SQL (BigQuery), Python (Pandas)
+*   **Statistical Analysis:** RStudio
+*   **Data Visualization:** Tableau Public, Excel
+*   **Documentation:** Markdown / GitHub
 
 ---
 
-## 🛠️ Tooling & Tech Stack
-* **Languages:** SQL, Python, R
-* **Data Engineering:** Python (Pandas/NumPy), R (dplyr, tidyverse)
-* **Analytics Environment:** BigQuery SQL, Jupyter Notebooks
-* **Visualization & Dashboards:** Tableau, ggplot2, Matplotlib
+## 📋 Table of Contents
+1. [Title and Introduction](#1-title-and-introduction)
+2. [Ask (Business Task)](#2-ask-business-task)
+3. [Prepare (Data Sources)](#3-prepare-data-sources)
+4. [Process (Data Cleaning & SQL Code)](#4-process-data-cleaning--sql-code)
+5. [Analyze (Data Insights)](#5-analyze-data-insights)
+6. [Share (Data Visualization)](#6-share-data-visualization)
+7. [Act (Recommendations)](#7-act-recommendations)
+8. [References & Links](#8-references--portfolio-links)
 
 ---
 
-## 📐 Data Pipeline & Methodology
-
-### 1. Ingestion & Preparation (Ask & Prepare)
-* **Dataset:** Public historical trip metrics (anonymized to protect user PII).
-* **Scope:** 12 monthly CSV files consolidated to evaluate long-term trends.
-
-### 2. Processing & Data Integrity (Process)
-* Handled missing value vectors (`null` values) across critical tracking fields.
-* Stripped systemic anomalies (e.g., negative duration fields caused by maintenance testing).
-* Standardized Unix/ISO timestamps across all data frames to ensure temporal alignment.
-
-### 3. Analysis & Threat-Hunting Analogy (Analyze)
-* Aggregated usage metrics based on time, day, week, and geographic station variables.
-* **Key Finding:** Casual riders exhibit localized, high-duration usage spikes on weekends, whereas annual members display predictable, high-frequency commuting peaks at 08:00 and 17:00 on weekdays.
-
-### 4. Strategic Recommendations (Act)
-* Implement targeted digital marketing near weekend leisure hubs during peak casual rider hours.
-* Introduce flexible weekend-only or seasonal membership variants tailored to casual user profiles.
+## 1. Title and Introduction
+*   **Project Title:** Cyclistic Bike-Share Case Study: Converting Casual Riders to Annual Members
+*   **Author:** [Your Name]
+*   **Date:** June 2026
+*   **Company Summary:** Cyclistic is a successful bike-share program in Chicago featuring over 5,800 bicycles and 692 geotracked docking stations. The company offers inclusive options like reclining bikes, hand tricycles, and cargo bikes. While 30% of users commute daily, the majority ride for leisure.
 
 ---
 
-## 📂 Repository Architecture
-```text
-├── data/
-│   ├── raw/           # Source datasets (Omitted from remote due to file size constraints)
-│   └── cleaned/       # Parsed datasets, data dictionaries, and cleaning logs
-├── scripts/           # Production scripts categorized by environment (SQL, R, Python)
-├── notebooks/         # Interactive Jupyter (.ipynb) and R Markdown (.Rmd) workflows
-├── visualizations/    # Static PNG/JPG charts and interactive Tableau dashboards (.twbx)
-└── docs/              # High-level executive reports and document summaries
-```
+## 2. Ask (Business Task)
+*   **Objective:** Analyze historical bike trip data to identify how casual riders and annual members use Cyclistic bikes differently. 
+*   **Business Task:** Design data-backed marketing strategies to convert casual riders into profitable annual members.
+*   **Stakeholders:** 
+    *   **Lily Moreno (Director of Marketing):** Responsible for launching the campaigns.
+    *   **Cyclistic Marketing Analytics Team:** Team responsible for data collection and reporting.
+    *   **Cyclistic Executive Team:** The detail-oriented board deciding on campaign approval.
+*   **Core Question:** How do annual members and casual riders use Cyclistic bikes differently?
 
 ---
 
-## 🚀 Execution & Reproduction
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com
-   ```
-2. **Execute Python Environment Cleanup:**
-   ```bash
-   pip install pandas numpy matplotlib
-   python scripts/python/your_script_name.py
-   ```
-3. **Database Engine:** Upload files to Google BigQuery or local PostgreSQL and execute query assets from `/scripts/sql/`.
+## 3. Prepare (Data Sources)
+*   **Data Source:** The analysis utilizes Cyclistic’s historical trip data from January 2025 to December 2025 stored securely in an AWS S3 bucket.
+*   **Dataset Structure:** The dataset consists of 12 monthly CSV files containing 13 columns: `ride_id`, `rideable_type`, `started_at`, `ended_at`, `start_station_name`, `start_station_id`, `end_station_name`, `end_station_id`, `start_lat`, `start_lng`, `end_lat`, `end_lng`, and `member_casual`.
+*   **Data Integrity & Privacy:** The data is public domain. Personally identifiable information (PII) like credit card numbers or home addresses is omitted to ensure user privacy. 
+
+---
+
+## 4. Process (Data Cleaning & SQL Code)
+To ensure transparency and reproducibility, the entire data cleaning process was executed using SQL. Due to the size of the queries, the comprehensive script has been organized into the scripts folder.
+
+*   📄 **View the full data cleaning script:** [data cleaning script](./scripts/sql/02_cleaning.sql)
+
+### Summary of SQL Operations Performed:
+1.  **Data Aggregation:** Combined 12 individual monthly data tables from 2025 using `UNION ALL`.
+2.  **Duplicate Removal:** Verified uniqueness of `ride_id` records using `DISTINCT`.
+3.  **Data Filtering:** Removed rows containing `NULL` values in critical location columns (`start_station_name`, `end_station_name`).
+4.  **Feature Engineering:** Calculated ride lengths using `TIMESTAMP_DIFF` and extracted day-of-the-week attributes using `EXTRACT`.
+5.  **Anomaly Handling:** Filtered out negative trip durations and rides lasting less than 1 minute.
+
+
+---
+
+## 5. Analyze (Data Insights)
+
+### User Volume & Bike Preference
+*   **Volume:** Total annual members consistently outnumber casual riders throughout the year.
+*   **Equipment:** Both groups prefer classic bikes over electric bikes.
+
+### Seasonal & Monthly Patterns
+*   **Seasonality:** Both groups peak during the summer and hit their lowest volumes in winter. 
+    *   **Casuals:** Peak in summer (**619,313** rides) and drop significantly in winter (**55,285** rides).
+    *   **Members:** Peak in summer (**828,987** rides) and drop to their lowest in winter (**250,296** rides).
+*   **Peak Months:** Member rides peak in **September** and hit a low in **December**. Casual rides peak in **August** and hit a low in **January**.
+
+### Weekly & Hourly Behaviors
+*   **Weekly Trends:** Members ride most frequently during the mid-week (**Tuesday through Thursday**). Casual riders heavily dominate the weekends (**Saturday and Sunday**).
+*   **Hourly Peaks:** 
+    *   **Members:** Peak sharply at **5:00 PM** (commute hours) and drop to their lowest at **3:00 AM**. Member volume at 5:00 PM is significantly higher than casual volume.
+    *   **Casuals:** Peak during the middle of the day at **1:00 PM** and hit their lowest point at **4:00 AM**.
+
+### Trip Duration & Distribution
+*   **Average Ride Times:** Casual riders log significantly longer trips than members across the entire week:
+    *   **Casuals:** Peak on Sunday (**25.94 mins**) and Saturday (**25.24 mins**), with their lowest average on Wednesday (**18.35 mins**).
+    *   **Members:** Peak on Sunday (**13.84 mins**) and Saturday (**13.68 mins**), with their lowest average on Wednesday (**11.80 mins**).
+*   **Peak Duration Counts:** 
+    *   The single most common ride duration for members is **5 minutes** (**190,124** riders). 
+    *   The single most common ride duration for casuals is **7 minutes** (**70,981** riders).
+*   **Duration Breakdown:**
+    *   **Short Trips (5–15 mins):** Dominated by members (**1,170,930** rides) compared to casuals (**562,506** rides).
+    *   **Long Trips (60+ mins):** Highly dominated by casuals (**79,997** rides) compared to members (**14,347** rides).
+
+### Geographic Preferences
+*   **Top Casual Station:** *DuSable Lake Shore Dr & Monroe St* (Leisure/tourist waterfront location).
+*   **Top Member Station:** *Kingsbury St & Kinzie St* (Commercial/office commuting zone).
+
+---
+
+## 6. Share (Data Visualization)
+*   **Visual Assets:** 
+    *   **Line Charts:** Formatted to map hourly trends (highlighting the 5:00 PM member commute spike vs. the midday casual hump) and monthly timelines to visualize seasonal drops.
+    *   **Bar Charts:** Formatted to compare member vs. casual ride counts by the day of the week, preferred bike types, and ride duration buckets (5–15 mins vs. 60+ mins).
+*   **Key Visual Takeaway:** The charts visually separate users into two distinct profiles: **Members are structured commuters** (mid-week, fixed 5:00 PM peaks, short 5-minute rides to office zones), while **Casuals are leisure seekers** (weekend-heavy, afternoon peaks, long 25+ minute rides near waterfront stations).
+
+---
+
+## 7. Act (Recommendations)
+
+Based on the data trends discovered, here are three recommendations to convert casual riders into annual members:
+
+1.  **Introduce a "Weekend Warrior" or "Seasonal Summer" Membership Pass**
+    *   *Data Justification:* Casual rides peak massively on weekends and during the summer season (619,313 rides vs. only 55,285 in winter). 
+    *   *Action:* Launch an annual membership variant that offers unlimited weekend riding or a discounted 4-month summer membership to capture leisure riders.
+2.  **Target Physical Marketing at Leisure Hotspots**
+    *   *Data Justification:* The number-one station for casual riders is *DuSable Lake Shore Dr & Monroe St*, a major leisure waterfront destination.
+    *   *Action:* Deploy physical advertisements, digital signs, and pop-up marketing teams at this specific station during peak casual hours (1:00 PM on weekends) showing cost savings of a membership.
+3.  **Gamify and Incentivize "Long-Duration" Trips**
+    *   *Data Justification:* Casual riders dominate long trips, with nearly 80,000 rides lasting over an hour, and an average weekend ride time of ~25 minutes. 
+    *   *Action:* Update the Cyclistic app to show casual riders a "Cost Savings Calculator" after any ride exceeding 15 minutes, highlighting how an annual membership eliminates single-ride overage fees.
+
+---
+
+## 8. References & Portfolio Links
+*   **Data Source:** Cyclistic Historical Dataset (Jan 2025 – Dec 2025)
+*   **GitHub Repository:** [Insert Link to Your GitHub Repository]
+*   **Tableau Dashboard:** [Insert Link to Your Tableau Public Dashboard]
