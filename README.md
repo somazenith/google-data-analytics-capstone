@@ -127,3 +127,5 @@ Based on the data trends discovered, here are three recommendations to convert c
 *   **Data Source:** Cyclistic Historical Dataset (Jan 2025 – Dec 2025)
 *   **GitHub Repository:** [Cyclistic Bike Share](https://github.com/somazenith/google-data-analytics-capstone)
 *   **Tableau Dashboard:** [Tableau Dashboard](https://public.tableau.com/views/cyclistic_analysis_17720239638910/RidersByMemberType?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+*   **Certification:** [Google Data Analytics](https://coursera.org/share/7a9ab4e3826964c56cd47fc4d4b1db16)
+*   **Credly:** [Credly Badge](https://www.credly.com/badges/0c0be63d-eae0-4d43-b1e0-a9fbe7e8369a/public_url)
