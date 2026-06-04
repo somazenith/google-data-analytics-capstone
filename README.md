@@ -26,8 +26,7 @@ Welcome to my portfolio project for the Google Data Analytics Professional Certi
 
 ## 1. Title and Introduction
 *   **Project Title:** Cyclistic Bike-Share Case Study: Converting Casual Riders to Annual Members
-*   **Author:** [Your Name]
-*   **Date:** June 2026
+*   **Author:** Soma Ganesh Dokku
 *   **Company Summary:** Cyclistic is a successful bike-share program in Chicago featuring over 5,800 bicycles and 692 geotracked docking stations. The company offers inclusive options like reclining bikes, hand tricycles, and cargo bikes. While 30% of users commute daily, the majority ride for leisure.
 
 ---
@@ -126,5 +125,5 @@ Based on the data trends discovered, here are three recommendations to convert c
 
 ## 8. References & Portfolio Links
 *   **Data Source:** Cyclistic Historical Dataset (Jan 2025 – Dec 2025)
-*   **GitHub Repository:** [Insert Link to Your GitHub Repository]
-*   **Tableau Dashboard:** [Insert Link to Your Tableau Public Dashboard]
+*   **GitHub Repository:** [Cyclistic Bike Share](https://github.com/somazenith/google-data-analytics-capstone)
+*   **Tableau Dashboard:** [Tableau Dashboard](https://public.tableau.com/views/cyclistic_analysis_17720239638910/RidersByMemberType?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
